@@ -27,6 +27,20 @@ Fork this repo to your account and clone the repo to local machine.
 git clone https://gitlab.com/{your user name}/shipyard-server.git
 ```
 
+#### **Setting up MySQL Database**
+Start your MySQL server
+
+*Note:* If you have password for myql with different username update it in `config/config.json`
+
+Run the command in GIT BASH in case of windows with the product directory.
+
+*DB Migration*
+
+```shell
+./node_modules/.bin/sequelize db:create
+./node_modules/.bin/sequelize db:migrate
+```
+
 #### **Running the server**
 
 ```shell
