@@ -11,11 +11,12 @@ router.get('/', function(req, res, next) {
 router.post('/register', function(req, res, next) {
   try {
     registerUser(req, db.User.ENUM_USER_TYPE.client, (err, data) => {
-      if (err) res.status(401).send(err);
-      else res.status(200).send(data);
+      if (err) {
+        res.status(401).send({ error: data.response });
+      } else res.status(200).send(data);
     });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send(err);
   }
 });
 

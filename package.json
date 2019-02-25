@@ -10,13 +10,15 @@
     "body-parser": "^1.18.3",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
+    "dotenv": "^6.2.0",
     "express": "~4.16.0",
     "http-errors": "~1.6.2",
     "jade": "~1.11.0",
     "keymirror": "^0.1.1",
     "morgan": "~1.9.0",
     "mysql2": "^1.6.5",
-    "sequelize": "^4.42.0"
+    "sequelize": "^4.42.0",
+    "twilio": "^3.28.1"
   },
   "devDependencies": {
     "nodemon": "^1.18.10",

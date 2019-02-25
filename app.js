@@ -7,8 +7,11 @@ var logger = require("morgan");
 
 var usersRouter = require("./routes/users");
 var testRouter = require("./routes/test");
+var sessionRouter = require("./routes/sessions");
 
 var app = express();
+
+require("dotenv").config();
 
 /* initialize all db models and assign to global variable db */
 global.db = require("./models");
@@ -27,10 +30,11 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/", express.static("public"));
 app.use("/users", usersRouter);
 app.use("/tests", testRouter);
+app.use("/session", sessionRouter);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  next(createError(404));
+  res.render("404");
 });
 
 // error handler
