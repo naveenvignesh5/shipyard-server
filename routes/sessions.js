@@ -3,7 +3,8 @@ const {
   generateToken,
   createRoom,
   listRooms,
-  completeRoom
+  completeRoom,
+  getRoom
 } = require("../libs/sessions");
 
 const router = express.Router();
@@ -40,8 +41,19 @@ router.post("/end", (req, res, next) => {
 
 router.get("/", (req, res, next) => {
   try {
-    listRooms(req.body, (err, data) => {
+    listRooms(req.query, (err, data) => {
       if (err) res.status(401).send({ error: err });
+      else res.status(200).send(data);
+    });
+  } catch (err) {
+    res.status(500).send({ error: err });
+  }
+});
+
+router.get("/:id", (req, res, next) => {
+  try {
+    getRoom(req.params.id, (err, data) => {
+      if (err) res.status(401).send(err);
       else res.status(200).send(data);
     });
   } catch (err) {

@@ -71,24 +71,32 @@ const createRoom = (config = {}, cb) => {
     });
 };
 
-const completeRoom = (config = {}, cb) => {
+const getRoom = (id, cb) => {
   axios
-    .post(
-      `${twilioVideoApi}/Rooms/${config.roomId}`,
-      {
-        Status: "completed"
-      },
-      {
-        auth: {
-          username: process.env.TWILIO_API_KEY,
-          password: process.env.TWILIO_API_SECRET
-        }
+    .get(`${twilioVideoApi}/Rooms/${id}`, {
+      auth: {
+        username: process.env.TWILIO_API_KEY,
+        password: process.env.TWILIO_API_SECRET
       }
-    )
+    })
+    .then(result => cb(null, result.data))
+    .catch(err => cb(err.data, null));
+};
+
+const completeRoom = (config = {}, cb) => {
+  const params = { Status: "completed" };
+  axios
+    .post(`${twilioVideoApi}/Rooms/${config.roomId}`, params, {
+      auth: {
+        username: process.env.TWILIO_API_KEY,
+        password: process.env.TWILIO_API_SECRET
+      }
+    })
     .then(res => {
       cb(null, res.data);
     })
     .catch(err => {
+      console.log("Error", err);
       cb(err.data, null);
     });
 };
@@ -116,5 +124,6 @@ module.exports = {
   generateToken,
   createRoom,
   completeRoom,
-  listRooms
+  listRooms,
+  getRoom,
 };
