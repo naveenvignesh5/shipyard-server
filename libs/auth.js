@@ -1,6 +1,6 @@
 const registerUser = async (req, role, cb) => {
   let user = {};
-
+  let error = null;
   const username = req.body.username.trim() || "";
   const password = req.body.password.trim() || "";
 
@@ -9,12 +9,22 @@ const registerUser = async (req, role, cb) => {
   if (!password) cb({ error: "Password not found" }, null);
 
   try {
-    user = await db.User.create({
-      username,
-      password: db.User.hashPassword(password),
-      role,
+    user = await db.User.findOne({
+      where: {
+        username,
+      }
     });
-    cb(null, user);
+
+    if (!user) {
+      user = await db.User.create({
+        username,
+        password: db.User.hashPassword(password),
+        role,
+      });
+      cb(null, user);
+    } else error = 'Username already registered';
+
+    cb({ error }, null);
   } catch (e) {
     cb(e, null);
   }
