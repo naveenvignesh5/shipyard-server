@@ -1,6 +1,5 @@
 const express = require("express");
 const {
-  generateToken,
   createRoom,
   listRooms,
   completeRoom,
@@ -9,13 +8,6 @@ const {
 
 const router = express.Router();
 
-router.post("/token", (req, res, next) => {
-  generateToken(req, (err, data) => {
-    if (err) res.status(401).send(err);
-    else res.status(200).send(data);
-  });
-});
-
 router.post("/create", (req, res, next) => {
   try {
     createRoom(req.body, (err, data) => {
@@ -23,7 +15,6 @@ router.post("/create", (req, res, next) => {
       else res.status(200).send(data);
     });
   } catch (err) {
-    console.log(err);
     res.status(500).send({ error: err });
   }
 });
