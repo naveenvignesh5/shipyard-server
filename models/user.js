@@ -11,6 +11,7 @@ const ENUM_USER_TYPE = keyMirror({
 
 module.exports = (sequelize, DataTypes) => {
   const User = sequelize.define("User", {
+    id: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
     username: { type: DataTypes.STRING, allowNull: false },
     password: { type: DataTypes.STRING, allowNull: false },
     role: {
@@ -46,6 +47,7 @@ module.exports = (sequelize, DataTypes) => {
 
   User.associate = function(models) {
     // associations can be defined here
+    // User.hasMany(models.session, { foreignKey: 'adminId' });
   };
 
   return User;

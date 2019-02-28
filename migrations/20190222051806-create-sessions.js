@@ -2,19 +2,25 @@
 
 module.exports = {
   up: (queryInterface, Sequelize) => {
-    return queryInterface.createTable('Sessions', {
+    return queryInterface.createTable('sessions', {
       id: {
         allowNull: false,
-        autoIncrement: true,
         primaryKey: true,
-        type: Sequelize.INTEGER
+        type: Sequelize.STRING,
+      },
+      chatId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      adminId: {
+        type: Sequelize.STRING,
+        allowNull: false,
+      },
+      active: {
+        type: Sequelize.BOOLEAN,
       },
       name: {
         type: Sequelize.STRING,
-      },
-      user_id: {
-        type: Sequelize.STRING,
-        allowNull: false,
       },
       createdAt: {
         allowNull: false,
@@ -27,6 +33,6 @@ module.exports = {
     });
   },
   down: (queryInterface, Sequelize) => {
-    return queryInterface.dropTable('Sessions');
+    return queryInterface.dropTable('session');
   }
 };

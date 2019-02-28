@@ -1,3 +1,5 @@
+const uuidV4 = require('uuid/v4');
+
 const AccessToken = require("twilio").jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
 const ChatGrant = AccessToken.ChatGrant;
@@ -62,6 +64,7 @@ const registerUser = async (req, role, cb) => {
 
     if (!user) {
       user = await db.User.create({
+        id: uuidV4(),
         username,
         password: db.User.hashPassword(password),
         role
