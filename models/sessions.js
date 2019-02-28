@@ -5,7 +5,7 @@ module.exports = (sequelize, DataTypes) => {
     id: { type: DataTypes.STRING, allowNull: false, primaryKey: true },
     chatId: { type: DataTypes.STRING, allowNull: false },
     adminId: { type: DataTypes.STRING, allowNull: false },
-    active: { type: DataTypes.BOOLEAN, defaultValue: false },
+    Status: { type: DataTypes.STRING, defaultValue: '' },
     name: { type: DataTypes.STRING },
     createdAt: DataTypes.DATE,
     updatedAt: DataTypes.DATE,

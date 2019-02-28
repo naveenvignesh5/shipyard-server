@@ -11,7 +11,10 @@ const createRoomWithChat = async (config = {}, cb) => {
   );
 
   try {
-    const room = await client.video.rooms.create({ uniqueName: config.name });
+    const room = await client.video.rooms.create({
+      uniqueName: config.name,
+      type: config.type
+    });
 
     const chat = await client.chat
       .services(process.env.TWILIO_CHAT_SERVICE_SID)
@@ -21,7 +24,8 @@ const createRoomWithChat = async (config = {}, cb) => {
       id: room.sid,
       chatId: chat.sid,
       adminId: config.user.id,
-      name: config.name
+      name: config.name,
+      Status: room.status
     });
     console.log(session);
     cb(null, session);
@@ -65,34 +69,50 @@ const getRoom = (id, cb) => {
     .catch(err => cb(err.data, null));
 };
 
-const completeRoom = (config = {}, cb) => {
-  const client = require("twilio")(
-    process.env.TWILIO_ACCOUNT_SID,
-    process.env.TWILIO_AUTH_TOKEN
-  );
+const completeRoom = async (config = {}, cb) => {
+  try {
+    const { id, chatId } = await db.sessions.findOne({
+      where: {
+        id: config.sessionId
+      }
+    });
+
+    const client = require("twilio")(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+
+    await client.video.rooms(id).update({ status: "completed" });
+
+    await client.chat
+      .services(process.env.TWILIO_CHAT_SERVICE_SID)
+      .channels(chatId)
+      .remove();
+
+    const res = await db.sessions.update(
+      {
+        Status: "completed"
+      },
+      { where: { id: config.sessionId } }
+    );
+    cb(null, res);
+  } catch (err) {
+    console.log(err);
+    cb(err, null);
+  }
 };
 
 const listRooms = async (config = {}, cb) => {
-  // axios
-  //   .get(`${twilioVideoApi}/Rooms`, {
-  //     params: config,
-  //     auth: {
-  //       username: process.env.TWILIO_API_KEY,
-  //       password: process.env.TWILIO_API_SECRET
-  //     }
-  //   })
-  //   .then(res => {
-  //     cb(null, res.data);
-  //   })
-  //   .catch(err => {
-  //     cb(err.data, null);
-  //   });
   try {
-    db.session.findAll({
+    const sessions = await db.sessions.findAll({
       limit: 10,
-      active: true
+      where: { Status: config.Status }
     });
-  } catch (err) {}
+    cb(null, { rooms: sessions });
+  } catch (err) {
+    console.log(err);
+    cb(err, null);
+  }
 };
 
 module.exports = {

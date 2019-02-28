@@ -32,13 +32,14 @@ Start your MySQL server
 
 *Note:* If you have password for myql with different username update it in `config/config.json`
 
-Run the command in GIT BASH in case of windows with the product directory.
+Run the command in GIT BASH in case of windows within product directory.
 
 *DB Migration*
 
 ```shell
 ./node_modules/.bin/sequelize db:create
 ./node_modules/.bin/sequelize db:migrate
+./node_modules/.bin/sequelize db:drop # Use it drop the database
 ```
 
 #### **Running the server**

@@ -1,4 +1,4 @@
-const uuidV4 = require('uuid/v4');
+const uuidV4 = require("uuid/v4");
 
 const AccessToken = require("twilio").jwt.AccessToken;
 const VideoGrant = AccessToken.VideoGrant;
@@ -62,17 +62,18 @@ const registerUser = async (req, role, cb) => {
       }
     });
 
-    if (!user) {
-      user = await db.User.create({
-        id: uuidV4(),
-        username,
-        password: db.User.hashPassword(password),
-        role
-      });
-      cb(null, user);
-    } else error = "Username already registered";
+    if (user && user.id) error = "Username already registered";
+    user = await db.User.create({
+      id: uuidV4(),
+      username,
+      password: db.User.hashPassword(password),
+      role
+    });
 
-    cb({ error }, null);
+    if (error) cb({ error }, null);
+    
+    cb(null, user);
+    
   } catch (e) {
     cb(e, null);
   }
@@ -110,5 +111,5 @@ const loginUser = async (req, role, cb) => {
 module.exports = {
   registerUser,
   loginUser,
-  generateToken,
+  generateToken
 };

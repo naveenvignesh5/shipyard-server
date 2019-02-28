@@ -16,8 +16,8 @@ module.exports = {
         type: Sequelize.STRING,
         allowNull: false,
       },
-      active: {
-        type: Sequelize.BOOLEAN,
+      Status: {
+        type: Sequelize.STRING,
       },
       name: {
         type: Sequelize.STRING,

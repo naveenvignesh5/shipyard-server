@@ -21,15 +21,17 @@ router.post("/create", (req, res, next) => {
 });
 
 router.post("/createWithChat", (req, res, next) => {
-  const { user, name } = req.body;
+  const { user, name, type } = req.body;
 
+  if (!type) type = 'group'; // defaults to group
+  
   if (!name) res.status(401).send({ message: "Session name required !!!" });
 
   if (!(user && user.id))
     res.status(402).send({ message: "user or user with id required !!!" });
 
   try {
-    createRoomWithChat(req.body, (err, data) => {
+    createRoomWithChat({ user, name, type }, (err, data) => {
       if (err) res.status(401).send({ error: err });
       else res.status(200).send(data);
     });
