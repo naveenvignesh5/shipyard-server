@@ -20,7 +20,8 @@
     "mysql2": "^1.6.5",
     "passport-local": "^1.0.0",
     "sequelize": "^4.42.0",
-    "twilio": "^3.28.1"
+    "twilio": "^3.28.1",
+    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "nodemon": "^1.18.10",
