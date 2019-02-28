@@ -82,20 +82,25 @@ const completeRoom = async (config = {}, cb) => {
       process.env.TWILIO_AUTH_TOKEN
     );
 
-    await client.video.rooms(id).update({ status: "completed" });
-
-    await client.chat
-      .services(process.env.TWILIO_CHAT_SERVICE_SID)
-      .channels(chatId)
-      .remove();
-
-    const res = await db.sessions.update(
+    await db.sessions.update(
       {
         Status: "completed"
       },
       { where: { id: config.sessionId } }
     );
-    cb(null, res);
+      
+    try {
+      await client.video.rooms(id).update({ status: "completed" });
+    } catch (err) {
+      console.log(err);
+    }
+    
+    await client.chat
+      .services(process.env.TWILIO_CHAT_SERVICE_SID)
+      .channels(chatId)
+      .remove();
+
+    cb(null, { message: 'ended', id });
   } catch (err) {
     console.log(err);
     cb(err, null);
