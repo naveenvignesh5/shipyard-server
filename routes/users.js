@@ -12,7 +12,7 @@ router.post("/register", function(req, res, next) {
   try {
     registerUser(req, db.User.ENUM_USER_TYPE.client, (err, data) => {
       if (err) {
-        res.status(401).send({ error: data.response });
+        res.status(401).send(err);
       } else res.status(200).send(data);
     });
   } catch (err) {
@@ -29,12 +29,20 @@ router.post("/token", (req, res, next) => {
 
 router.post("/login", function(req, res, next) {
   try {
-    loginUser(req, db.User.ENUM_USER_TYPE.admin, (err, data) => {
+    const { username, password, role } = req.body;
+
+    if (!username) res.status(401).send({ message: "Username required !!!" });
+
+    if (!password) res.status(401).send({ message: "Password required !!!" });
+
+    if (!role) res.status(401).send({ message: "User role is required !!!" });
+
+    loginUser(req.body, (err, data) => {
       if (err) res.status(401).send(err);
       else res.status(200).send(data);
     });
   } catch (err) {
-    res.status(500).send({ error: err });
+    res.status(500).send({ error: err, message: "Unable to login." });
   }
 });
 

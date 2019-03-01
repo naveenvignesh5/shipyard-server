@@ -62,29 +62,36 @@ const registerUser = async (req, role, cb) => {
       }
     });
 
-    if (user && user.id) error = "Username already registered";
-    user = await db.User.create({
-      id: uuidV4(),
-      username,
-      password: db.User.hashPassword(password),
-      role
-    });
+    console.log(user);
+    if (user && user.id) {
+      error = "Username already registered";
+      cb({ message: error}, null);
+    } else {
+      user = await db.User.create({
+        id: uuidV4(),
+        username,
+        password: db.User.hashPassword(password),
+        role
+      });
+  
+      if (error) cb({ message: error }, null);
+      else cb(null, user);
+    }
 
-    if (error) cb({ error }, null);
-    
-    cb(null, user);
     
   } catch (e) {
+    console.log(e);
     cb(e, null);
   }
 };
 
-const loginUser = async (req, role, cb) => {
+const loginUser = async (config = {}, cb) => {
   let user = {};
   let error = null;
 
-  const username = req.body.username.trim() || "";
-  const password = req.body.password.trim() || "";
+  const username = config.username.trim() || "";
+  const password = config.password.trim() || "";
+  const role = config.role.trim() || "";
 
   if (!username) cb({ error: "Username not found" }, null);
 
@@ -93,17 +100,24 @@ const loginUser = async (req, role, cb) => {
   try {
     user = await db.User.findOne({
       where: {
-        username
-      }
+        username,
+        role,
+      },
     });
 
-    if (!user) error = "No user found !!!";
+    if (!user) {
+      error = "No user found !!!";
+      cb({ message: error });
+    } else {
+      if (!user.validPassword(password)) error = "Invalid Password !!!";
+      // if (!user.validType(role)) error = `Authorization not given to ${user.role}`;
+  
+      if (error) cb({ message: error }, null);
+      else cb(null, user);
+    }
 
-    if (!user.validPassword(password)) error = "Invalid Password !!!";
-
-    if (error) cb({ error }, null);
-    else cb(null, user);
   } catch (e) {
+    console.log(e);
     cb({ error: e }, null);
   }
 };
