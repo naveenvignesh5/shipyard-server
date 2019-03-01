@@ -62,9 +62,13 @@ router.get("/messages/:channelId", (req, res, next) => {
   try {
     getChannelMessages(req.params.channelId, (err, data) => {
       if (err) res.status(401).send(err);
-      else res.status(200).send(data);
+      else {
+        console.log(data);
+        res.status(200).send(data);
+      }
     });
   } catch (err) {
+    console.log(err);
     res.status(500).send(err);
   }
 });
