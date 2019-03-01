@@ -1,6 +1,5 @@
 const axios = require("axios");
 
-
 const createChannel = (config, cb) => {
   const client = require("twilio")(
     process.env.TWILIO_ACCOUNT_SID,
@@ -43,6 +42,20 @@ const getAllChannels = cb => {
     .catch(err => cb(err.data, null));
 };
 
+const getChannel = async (channelId, cb) => {
+  const client = require("twilio")(
+    process.env.TWILIO_ACCOUNT_SID,
+    process.env.TWILIO_AUTH_TOKEN
+  );
+
+  try {
+    const res = await client.chat.services(process.env.TWILIO_CHAT_SERVICE_SID).channels(channelId).fetch();
+    cb(null, res);
+  } catch (err) {
+    cb(err, null);
+  }
+};
+
 const getChannelMessages = (channelId, cb) => {
   axios
     .get(
@@ -83,5 +96,6 @@ module.exports = {
   getAllChannels,
   deleteChannel,
   getChannelMessages,
-  addMessage
+  getChannel,
+  addMessage,
 };

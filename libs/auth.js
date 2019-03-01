@@ -16,12 +16,7 @@ const generateToken = (req, cb) => {
       process.env.TWILIO_API_SECRET
     );
 
-    const appName = "Shipyard";
-    const deviceId = req.query.device;
-
     const identity = req.body.userid.toString();
-
-    const endpointId = appName + ":" + identity + ":" + deviceId;
 
     token.identity = identity;
 
@@ -29,7 +24,6 @@ const generateToken = (req, cb) => {
     // videoGrant.room = 'demo'; // TODO: Update the static room to room from list of sessions
     const chatGrant = new ChatGrant({
       serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
-      endpointId
     });
 
     token.addGrant(videoGrant);
@@ -37,7 +31,7 @@ const generateToken = (req, cb) => {
 
     cb(null, {
       identity: token.identity,
-      token: token.toJwt()
+      token: token.toJwt(),
     });
   } catch (err) {
     console.log(err);

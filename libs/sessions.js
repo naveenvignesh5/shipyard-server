@@ -57,16 +57,15 @@ const createRoom = (config = {}, cb) => {
     });
 };
 
-const getRoom = (id, cb) => {
-  axios
-    .get(`${twilioVideoApi}/Rooms/${id}`, {
-      auth: {
-        username: process.env.TWILIO_API_KEY,
-        password: process.env.TWILIO_API_SECRET
-      }
-    })
-    .then(result => cb(null, result.data))
-    .catch(err => cb(err.data, null));
+const getRoom = async (id, cb) => {
+  try {
+    const res = await db.sessions.findOne({
+      where: { id },
+    });
+    cb(null, res)
+  } catch (err) {
+    cb(err, null);
+  }
 };
 
 const completeRoom = async (config = {}, cb) => {

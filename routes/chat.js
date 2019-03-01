@@ -4,15 +4,17 @@ const {
   getChannelMessages,
   addMessage,
   deleteChannel,
-  getAllChannels
+  getAllChannels,
+  getChannel
 } = require("../libs/chat");
 
 const router = express.Router();
 
 router.put("/channels", (req, res, next) => {
   try {
-    if (!req.body.name) res.status(401).send({ message: "Channel name is required" });
-    
+    if (!req.body.name)
+      res.status(401).send({ message: "Channel name is required" });
+
     createChannel(req.body, (err, data) => {
       if (err) res.status(401).send(err);
       else res.status(200).send(data);
@@ -34,10 +36,20 @@ router.get("/channels", (req, res, next) => {
   }
 });
 
+router.get("/channels/:channelId", (req, res, next) => {
+  try {
+    getChannel(req.params.channelId, (err, data) => {
+      if (err) res.status(401).send(err);
+      else res.status(200).send(data);
+    });
+  } catch (err) {
+    res.status(500).send(err);
+  }
+});
+
 router.delete("/channels/:channelId", (req, res, next) => {
   try {
     deleteChannel(req.params.channelId, (err, data) => {
-      console.log(data);
       if (err) res.status(401).send(err);
       else res.status(200).send(data);
     });
