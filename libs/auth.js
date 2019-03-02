@@ -23,7 +23,7 @@ const generateToken = (req, cb) => {
     const videoGrant = new VideoGrant();
     // videoGrant.room = 'demo'; // TODO: Update the static room to room from list of sessions
     const chatGrant = new ChatGrant({
-      serviceSid: process.env.TWILIO_CHAT_SERVICE_SID,
+      serviceSid: process.env.TWILIO_CHAT_SERVICE_SID
     });
 
     token.addGrant(videoGrant);
@@ -31,7 +31,7 @@ const generateToken = (req, cb) => {
 
     cb(null, {
       identity: token.identity,
-      token: token.toJwt(),
+      token: token.toJwt()
     });
   } catch (err) {
     console.log(err);
@@ -44,10 +44,13 @@ const registerUser = async (req, role, cb) => {
   let error = null;
   const username = req.body.username.trim() || "";
   const password = req.body.password.trim() || "";
+  const email = req.body.email.trim() || "";
 
   if (!username) cb({ error: "Username not found" }, null);
 
   if (!password) cb({ error: "Password not found" }, null);
+
+  if (!email) cb({ error: "email not found" }, null);
 
   try {
     user = await db.User.findOne({
@@ -59,20 +62,19 @@ const registerUser = async (req, role, cb) => {
     console.log(user);
     if (user && user.id) {
       error = "Username already registered";
-      cb({ message: error}, null);
+      cb({ message: error }, null);
     } else {
       user = await db.User.create({
         id: uuidV4(),
         username,
         password: db.User.hashPassword(password),
-        role
+        email,
+        role,
       });
-  
+
       if (error) cb({ message: error }, null);
       else cb(null, user);
     }
-
-    
   } catch (e) {
     console.log(e);
     cb(e, null);
@@ -95,8 +97,8 @@ const loginUser = async (config = {}, cb) => {
     user = await db.User.findOne({
       where: {
         username,
-        role,
-      },
+        role
+      }
     });
 
     if (!user) {
@@ -105,11 +107,10 @@ const loginUser = async (config = {}, cb) => {
     } else {
       if (!user.validPassword(password)) error = "Invalid Password !!!";
       // if (!user.validType(role)) error = `Authorization not given to ${user.role}`;
-  
+
       if (error) cb({ message: error }, null);
       else cb(null, user);
     }
-
   } catch (e) {
     console.log(e);
     cb({ error: e }, null);
