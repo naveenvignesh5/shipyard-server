@@ -42,6 +42,9 @@ router.post("/createWithChat", (req, res, next) => {
 
 router.post("/end", (req, res, next) => {
   try {
+    
+    if (req.body.sessionId) res.status(401).send({ message: "session id missing !!!" });
+
     completeRoom(req.body, (err, data) => {
       if (err) res.status(401).send({ error: err });
       else res.status(200).send(data);
@@ -70,6 +73,14 @@ router.get("/:id", (req, res, next) => {
     });
   } catch (err) {
     res.status(500).send({ error: err });
+  }
+});
+
+router.put('/ppt', (req, res, next) => {
+  try {
+
+  } catch (err) {
+    
   }
 });
 

@@ -94,10 +94,14 @@ const completeRoom = async (config = {}, cb) => {
       console.log(err);
     }
     
-    await client.chat
-      .services(process.env.TWILIO_CHAT_SERVICE_SID)
-      .channels(chatId)
-      .remove();
+    try {
+      await client.chat
+        .services(process.env.TWILIO_CHAT_SERVICE_SID)
+        .channels(chatId)
+        .remove();
+    } catch (err) {
+      console.log(err);
+    }
 
     cb(null, { message: 'ended', id });
   } catch (err) {
