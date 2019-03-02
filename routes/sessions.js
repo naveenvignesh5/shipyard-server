@@ -21,9 +21,9 @@ router.post("/create", (req, res, next) => {
 });
 
 router.post("/createWithChat", (req, res, next) => {
-  const { user, name, type } = req.body;
+  const { user, name } = req.body;
 
-  if (!type) type = 'group'; // defaults to group
+  let type = 'group'; // defaults to group
   
   if (!name) res.status(401).send({ message: "Session name required !!!" });
 
@@ -43,9 +43,10 @@ router.post("/createWithChat", (req, res, next) => {
 router.post("/end", (req, res, next) => {
   try {
     
-    if (req.body.sessionId) res.status(401).send({ message: "session id missing !!!" });
+    if (!req.body.sessionId) res.status(401).send({ message: "session id missing !!!" });
 
     completeRoom(req.body, (err, data) => {
+      console.log(data);
       if (err) res.status(401).send({ error: err });
       else res.status(200).send(data);
     });
