@@ -88,6 +88,8 @@ const getChannelMessages = (channelId, cb) => {
 };
 
 const addMessage = async (config, cb) => {
+  // method 1: add by api
+  
   // axios
   //   .post(
   //     `${twilioChatApi}/${process.env.TWILIO_CHAT_SERVICE_SID}/Channels/${
@@ -103,6 +105,8 @@ const addMessage = async (config, cb) => {
   //   )
   //   .then(res => cb(null, res.data))
   //   .catch(err => cb(err.data, null));
+
+  // method 2: add by library
   const client = require("twilio")(
     process.env.TWILIO_ACCOUNT_SID,
     process.env.TWILIO_AUTH_TOKEN
