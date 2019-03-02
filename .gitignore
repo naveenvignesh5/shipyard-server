@@ -27,3 +27,6 @@ coverage
 benchmarks/graphs
 
 public/*
+
+# dummy uploads
+uploads/*

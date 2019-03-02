@@ -7,24 +7,75 @@ const {
   getRoom
 } = require("../libs/sessions");
 
+const fs = require('fs');
+
+const { sendMail } = require("../libs/mail");
+
 const router = express.Router();
 
 router.post("/create", (req, res, next) => {
   try {
     createRoom(req.body, (err, data) => {
       if (err) res.status(401).send({ error: err });
-      else res.status(200).send(data);
+      else {
+        sendMail(
+          {
+            email: req.body.email,
+            message: `You have been invited to attend conference about ${
+              req.body.name
+            }`
+          },
+          (err, data) => {
+            if (err) res.status(401).send(err);
+            else res.status(200).send(data);
+          }
+        );
+        res.status(200).send(data);
+      }
     });
   } catch (err) {
     res.status(500).send({ error: err });
   }
 });
 
+router.get('/ppts', (req, res, next) => {
+  try {
+    fs.readdir('uploads', (err, files) => {
+      if (err) res.status(401).send(err);
+      else res.status(200).send({ files });
+    })
+  } catch (err) {
+    console.log(err);
+    res.status(500).send(err);
+  }
+});
+
+router.post("/upload", (req, res) => {
+  let uploadFile = req.files.file;
+  const fileName = req.files.file.name;
+
+  const sessionId = req.body.sessionId;
+
+  const dir = `uploads/${sessionId}`;
+
+  if (!fs.existsSync(dir)) fs.mkdirSync(dir);
+
+  uploadFile.mv(`${dir}/${fileName}`, (err) => {
+    if (err) {
+      return res.status(500).send(err);
+    }
+
+    res.json({
+      file: `uploads/${req.files.file.name}`
+    });
+  });
+});
+
 router.post("/createWithChat", (req, res, next) => {
   const { user, name } = req.body;
 
-  let type = 'group'; // defaults to group
-  
+  let type = "group"; // defaults to group
+
   if (!name) res.status(401).send({ message: "Session name required !!!" });
 
   if (!(user && user.id))
@@ -42,8 +93,8 @@ router.post("/createWithChat", (req, res, next) => {
 
 router.post("/end", (req, res, next) => {
   try {
-    
-    if (!req.body.sessionId) res.status(401).send({ message: "session id missing !!!" });
+    if (!req.body.sessionId)
+      res.status(401).send({ message: "session id missing !!!" });
 
     completeRoom(req.body, (err, data) => {
       console.log(data);
@@ -74,14 +125,6 @@ router.get("/:id", (req, res, next) => {
     });
   } catch (err) {
     res.status(500).send({ error: err });
-  }
-});
-
-router.put('/ppt', (req, res, next) => {
-  try {
-
-  } catch (err) {
-    
   }
 });
 
