@@ -5,6 +5,7 @@ var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var logger = require("morgan");
 var fileUpload = require('express-fileupload');
+var serveIndex = require('serve-index');
 
 var usersRouter = require("./routes/users");
 var testRouter = require("./routes/test");
@@ -37,7 +38,7 @@ app.use("/tests", testRouter);
 app.use("/session", sessionRouter);
 app.use("/chat", chatRouter);
 app.use("/mail", mailRouter);
-
+app.use('/files', express.static('./uploads/'));
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
   res.render("404");

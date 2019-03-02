@@ -7,7 +7,7 @@ const {
   getRoom
 } = require("../libs/sessions");
 
-const fs = require('fs');
+const fs = require("fs");
 
 const { sendMail } = require("../libs/mail");
 
@@ -38,12 +38,22 @@ router.post("/create", (req, res, next) => {
   }
 });
 
-router.get('/ppts', (req, res, next) => {
+router.get("/files/:sessionId", (req, res, next) => {
+  if (!req.params.sessionId)
+    res.status(401).send({ message: "session id required !!!" });
+
   try {
-    fs.readdir('uploads', (err, files) => {
-      if (err) res.status(401).send(err);
-      else res.status(200).send({ files });
-    })
+    console.log(__dirname);
+    fs.readdir(
+      __dirname + '../../uploads/' + req.params.sessionId,
+      (err, files) => {
+        if (err) {
+          res.status(401).send({ message: err.message });
+        } else {
+          res.status(200).send({ files });
+        }
+      }
+    );
   } catch (err) {
     console.log(err);
     res.status(500).send(err);
@@ -60,13 +70,13 @@ router.post("/upload", (req, res) => {
 
   if (!fs.existsSync(dir)) fs.mkdirSync(dir);
 
-  uploadFile.mv(`${dir}/${fileName}`, (err) => {
+  uploadFile.mv(`${dir}/${fileName}`, err => {
     if (err) {
       return res.status(500).send(err);
     }
 
     res.json({
-      file: `uploads/${req.files.file.name}`
+      file: `uploads/${sessionId}/${req.files.file.name}`
     });
   });
 });
