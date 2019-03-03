@@ -5,7 +5,8 @@ const {
   listRooms,
   completeRoom,
   getRoom,
-  covertToPDF
+  getRoomRecordings,
+  // covertToPDF,
 } = require("../libs/sessions");
 
 const fs = require("fs");
@@ -27,8 +28,13 @@ router.post("/create", (req, res, next) => {
             }`
           },
           (err, data) => {
-            if (err) res.status(401).send(err);
-            else res.status(200).send(data);
+            if (err) {
+              res.status(401).send(err);
+              console.log("sessions:create:mail", err);
+            } else {
+              console.log(data);
+              res.status(200).send(data);
+            }
           }
         );
         res.status(200).send(data);
@@ -78,7 +84,6 @@ router.post("/upload", (req, res) => {
       console.log(err);
       return res.status(500).send(err);
     }
-
     // covertToPDF(
     //   {
     //     path: `${__dirname}/../../../shipyard-server/uploads/${sessionId}/${fileName}`
@@ -107,7 +112,9 @@ router.post("/createWithChat", (req, res, next) => {
   try {
     createRoomWithChat({ user, name, type }, (err, data) => {
       if (err) res.status(401).send({ error: err });
-      else res.status(200).send(data);
+      else {
+        res.status(200).send(data);
+      }
     });
   } catch (err) {
     res.status(500).send({ error: err });
@@ -120,7 +127,6 @@ router.post("/end", (req, res, next) => {
       res.status(401).send({ message: "session id missing !!!" });
 
     completeRoom(req.body, (err, data) => {
-      console.log(data);
       if (err) res.status(401).send({ error: err });
       else res.status(200).send(data);
     });
@@ -148,6 +154,17 @@ router.get("/:id", (req, res, next) => {
     });
   } catch (err) {
     res.status(500).send({ error: err });
+  }
+});
+
+router.get("/recordings/:id", (req, res, next) => {
+  try {
+    getRoomRecordings(req.params.id, (err, data) => {
+      if (err) res.status(401).send(err);
+      else res.status(200).send(data);
+    });
+  } catch (err) {
+    res.status(500).send(err);
   }
 });
 

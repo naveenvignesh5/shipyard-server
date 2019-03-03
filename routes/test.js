@@ -1,15 +1,7 @@
 var express = require("express");
 var router = express.Router();
-var multer = require("multer");
 
-var storage = multer.diskStorage({
-  destination: (req, file, callback) => {
-    callback(null, "../uploads");
-  },
-  filename: (req, file, callback) => {
-    callback(null, file.originalname);
-  }
-});
+const { sendNotification } = require("../libs/mail");
 
 router.get("/", function(req, res, next) {
   res.send({ message: "It works !!!" });
@@ -30,6 +22,15 @@ router.post("/upload", (req, res) => {
     res.json({
       file: `uploads/${req.files.file.name}`
     });
+  });
+});
+
+router.post("/notify", async (req, res) => {
+  if (!req.body.message)
+    res.status(401).send({ message: "Message is required" });
+  sendNotification(req.body, (err, data) => {
+    if (err) res.status(500).send(err);
+    else res.status(200).send(data);
   });
 });
 

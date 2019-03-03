@@ -1,5 +1,6 @@
 const axios = require("axios");
 
+const { sendGroupMail, sendMail } = require("./mail");
 const twilioVideoApi = "https://video.twilio.com/v1";
 
 // room listing, creation, removal, joining, leaving
@@ -27,9 +28,42 @@ const createRoomWithChat = async (config = {}, cb) => {
       name: config.name,
       Status: room.status
     });
-    cb(null, session);
+
+    const users = await db.User.findAll({
+      where: {
+        role: "client"
+      }
+    });
+
+    sendGroupMail(
+      users,
+      `Remainder for meeting regarding ${config.name}`,
+      (err, data) => {
+        if (err) {
+          cb(err, null);
+        } else {
+          cb(null, { session, users });
+        }
+      }
+    );
+    // sendMail({ email: users[1].email, name: users[1].username }, (err, data) => {
+    //   if (err) cb(err, null);
+    //   else cb(null, data);
+    // });
+    // let i = 0;
+    // let user = {};
+    // users.forEach(user => {
+    //   sendMail({
+    //     email: user.email,
+    //     message: `You have been invited to ${session.name} along with ${
+    //       users.length
+    //     } people.`
+    //   });
+    // });
+    // cb(null, { session, users });
   } catch (err) {
-    cb(err, null);
+    console.log(err.data);
+    cb(err.data, null);
   }
 };
 
@@ -135,11 +169,30 @@ const covertToPDF = async (config, cb) => {
   }
 };
 
+// code to recordings
+const getRoomRecordings = (roomId, cb) => {
+  try {
+    const client = require("twilio")(
+      process.env.TWILIO_ACCOUNT_SID,
+      process.env.TWILIO_AUTH_TOKEN
+    );
+    const recs = [];
+    client.video
+      .rooms(roomId)
+      .recordings
+      .each(rec => recs.push(rec));
+    cb(null, recs);
+  } catch (err) {
+    cb(err, null);
+  }
+};
+
 module.exports = {
   createRoomWithChat,
   createRoom,
   completeRoom,
   listRooms,
   getRoom,
-  covertToPDF
+  covertToPDF,
+  getRoomRecordings,
 };
