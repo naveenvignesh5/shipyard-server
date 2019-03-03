@@ -27,10 +27,8 @@ const createRoomWithChat = async (config = {}, cb) => {
       name: config.name,
       Status: room.status
     });
-    console.log(session);
     cb(null, session);
   } catch (err) {
-    console.log(err);
     cb(err, null);
   }
 };
@@ -60,9 +58,9 @@ const createRoom = (config = {}, cb) => {
 const getRoom = async (id, cb) => {
   try {
     const res = await db.sessions.findOne({
-      where: { id },
+      where: { id }
     });
-    cb(null, res)
+    cb(null, res);
   } catch (err) {
     cb(err, null);
   }
@@ -87,13 +85,13 @@ const completeRoom = async (config = {}, cb) => {
       },
       { where: { id: config.sessionId } }
     );
-      
+
     try {
       await client.video.rooms(id).update({ status: "completed" });
     } catch (err) {
       console.log(err);
     }
-    
+
     try {
       await client.chat
         .services(process.env.TWILIO_CHAT_SERVICE_SID)
@@ -103,7 +101,7 @@ const completeRoom = async (config = {}, cb) => {
       console.log(err);
     }
 
-    cb(null, { message: 'ended', id });
+    cb(null, { message: "ended", id });
   } catch (err) {
     console.log(err);
     cb(err, null);
@@ -123,10 +121,25 @@ const listRooms = async (config = {}, cb) => {
   }
 };
 
+const covertToPDF = async (config, cb) => {
+  const convertapi = require("convertapi")(process.env.CONVERTAPI_KEY);
+  try {
+    const result = await convertapi.convert("pdf", { File: config.path });
+    console.log(result);
+    const file = await result.file.save(
+      `${__dirname}/../../uploads/${result.file.name}.pdf`
+    );
+    cb(null, { message: "success", file });
+  } catch (err) {
+    cb(err, null);
+  }
+};
+
 module.exports = {
   createRoomWithChat,
   createRoom,
   completeRoom,
   listRooms,
-  getRoom
+  getRoom,
+  covertToPDF
 };

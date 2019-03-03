@@ -4,7 +4,8 @@ const {
   createRoomWithChat,
   listRooms,
   completeRoom,
-  getRoom
+  getRoom,
+  covertToPDF
 } = require("../libs/sessions");
 
 const fs = require("fs");
@@ -45,7 +46,7 @@ router.get("/files/:sessionId", (req, res, next) => {
   try {
     console.log(__dirname);
     fs.readdir(
-      __dirname + '../../uploads/' + req.params.sessionId,
+      __dirname + "../../uploads/" + req.params.sessionId,
       (err, files) => {
         if (err) {
           res.status(401).send({ message: err.message });
@@ -64,6 +65,8 @@ router.post("/upload", (req, res) => {
   let uploadFile = req.files.file;
   const fileName = req.files.file.name;
 
+  console.log(req.files.file);
+
   const sessionId = req.body.sessionId;
 
   const dir = `uploads/${sessionId}`;
@@ -72,9 +75,19 @@ router.post("/upload", (req, res) => {
 
   uploadFile.mv(`${dir}/${fileName}`, err => {
     if (err) {
+      console.log(err);
       return res.status(500).send(err);
     }
 
+    // covertToPDF(
+    //   {
+    //     path: `${__dirname}/../../../shipyard-server/uploads/${sessionId}/${fileName}`
+    //   },
+    //   (err, data) => {
+    //     if (err) console.log(err);
+    //     console.log(data);
+    //   }
+    // );
     res.json({
       file: `uploads/${sessionId}/${req.files.file.name}`
     });
